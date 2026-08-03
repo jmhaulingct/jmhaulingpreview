@@ -2,8 +2,8 @@
 // Supabase Connection
 // ----------------------------
 
-const SUPABASE_URL = https://ocjtsdjxgozlcymyboja.supabase.co;
-const SUPABASE_ANON_KEY = sb_publishable_D9aoJfd0GHu2HoETNx2qJQ_Z70NzJE7;
+const SUPABASE_URL = "https://ocjtsdjxgozlcymyboja.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_D9aoJfd0GHu2HoETNx2qJQ_Z70NzJE7";
 
 const supabase = window.supabase.createClient(
     SUPABASE_URL,
