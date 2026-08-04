@@ -222,9 +222,9 @@ quoteForm.addEventListener("submit", async (event) => {
             .getElementById("town")
             .value,
 
-          location: document
-            .getElementById("location")
-            .value,
+          item_location: document
+  .getElementById("location")
+  .value,
 
           description: document
             .getElementById("description")
