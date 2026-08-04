@@ -17,5 +17,202 @@
     .reviews{background:var(--navy);color:#fff}.reviews-row{display:flex;align-items:center;justify-content:space-between;gap:24px}.reviews h2{font-size:clamp(2rem,5vw,3rem);letter-spacing:-.04em;margin:0 0 8px}.reviews p{margin:0;color:rgba(255,255,255,.78)}.reviews .btn{background:#fff;color:var(--navy);white-space:nowrap}
     .faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}details{border:1px solid var(--line);border-radius:14px;padding:17px 19px;background:#fff}summary{font-weight:850;color:var(--navy);cursor:pointer}details p{margin:10px 0 0;color:var(--muted)}
     footer{background:var(--navy2);color:rgba(255,255,255,.72);padding:30px 0;font-size:.88rem}.footer-row{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}.footer-row img{width:46px;height:46px;border-radius:50%}.footer-links{display:flex;gap:16px;flex-wrap:wrap}.footer-links a{color:#fff;text-decoration:none}
+   /* ----------------------------
+   Multi-Step Quote Form
+---------------------------- */
+
+.progress-wrap {
+  padding: 22px 28px 0;
+}
+
+.progress-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+  font-size: 0.84rem;
+  font-weight: 850;
+  color: var(--navy);
+}
+
+.progress-track {
+  height: 8px;
+  background: #e8edf4;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 33.333%;
+  background: linear-gradient(90deg, var(--blue), var(--navy));
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.form-step {
+  display: none;
+  animation: stepIn 0.24s ease;
+}
+
+.form-step.active {
+  display: block;
+}
+
+@keyframes stepIn {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.step-title {
+  margin: 0 0 5px;
+  font-size: 1.45rem;
+  letter-spacing: -0.025em;
+}
+
+.step-subtitle {
+  margin: 0 0 20px;
+  color: var(--muted);
+}
+
+.step-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.step-actions .btn {
+  flex: 1;
+}
+
+.btn-muted {
+  background: #edf2f8;
+  color: var(--navy);
+}
+
+.choice-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.choice {
+  position: relative;
+}
+
+.choice input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.choice label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  text-align: center;
+  border: 1px solid #cbd6e4;
+  border-radius: 12px;
+  background: #fbfcfe;
+  padding: 10px;
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+.choice input:checked + label {
+  border-color: var(--navy);
+  background: #eaf2fb;
+  color: var(--navy);
+  box-shadow: 0 0 0 3px rgba(11, 95, 179, 0.09);
+}
+
+.date-note {
+  margin-top: 7px;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.photo-drop {
+  border: 2px dashed #b8c5d6;
+  border-radius: 16px;
+  padding: 22px;
+  text-align: center;
+  background: #fbfcfe;
+}
+
+.photo-drop input {
+  margin-top: 12px;
+  background: #fff;
+}
+
+.screen-note {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  background: #eef5fd;
+  color: #174d84;
+  border-radius: 12px;
+  padding: 13px 14px;
+  margin-top: 16px;
+  font-size: 0.86rem;
+} 
     @media(max-width:820px){.service-grid{grid-template-columns:1fr}.gallery{grid-template-columns:1fr 1fr;grid-template-rows:300px 220px 220px}.gallery figure:first-child{grid-column:1/-1;grid-row:auto}.reviews-row{align-items:flex-start;flex-direction:column}.faq-grid{grid-template-columns:1fr}}
-    @media(max-width:620px){.topbar{font-size:.77rem}.nav{height:64px}.logo img{width:46px;height:46px}.nav-contact{font-size:.82rem}.hero{padding:42px 0 70px;background:linear-gradient(0deg,rgba(3,28,61,.97),rgba(3,28,61,.72) 72%,rgba(3,28,61,.26)),url('assets/full-trailer.jpg') 57% center/cover no-repeat}.hero-actions .btn{width:100%}.quote-shell{margin-top:-38px}.quote-head,.form-panel,.next{padding-left:19px;padding-right:19px}.form-grid{grid-template-columns:1fr}.field.full,.submit{grid-column:auto}.next-grid{grid-template-columns:1fr;gap:11px}section{padding:54px 0}.gallery{grid-template-columns:1fr;grid-template-rows:repeat(4,250px)}.gallery figure:first-child{grid-column:auto}.footer-row{align-items:flex-start}}
+    @media(max-width:620px){
+  .topbar{font-size:.77rem}
+  .nav{height:64px}
+  .logo img{width:46px;height:46px}
+  .nav-contact{font-size:.82rem}
+
+  .hero{
+    padding:42px 0 70px;
+    background:
+      linear-gradient(
+        0deg,
+        rgba(3,28,61,.97),
+        rgba(3,28,61,.72) 72%,
+        rgba(3,28,61,.26)
+      ),
+      url('assets/full-trailer.jpg') 57% center/cover no-repeat;
+  }
+
+  .hero-actions .btn{width:100%}
+  .quote-shell{margin-top:-38px}
+
+  .quote-head,
+  .form-panel,
+  .next,
+  .progress-wrap{
+    padding-left:19px;
+    padding-right:19px;
+  }
+
+  .form-grid{grid-template-columns:1fr}
+  .field.full,.submit{grid-column:auto}
+  .next-grid{grid-template-columns:1fr;gap:11px}
+
+  .step-actions{
+    flex-direction:column-reverse;
+  }
+
+  .choice-grid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  section{padding:54px 0}
+  .gallery{
+    grid-template-columns:1fr;
+    grid-template-rows:repeat(4,250px);
+  }
+
+  .gallery figure:first-child{grid-column:auto}
+  .footer-row{align-items:flex-start}
+}
