@@ -30,26 +30,65 @@
       </div>
     </header>
 
-    <div class="quote-shell" id="quote">
+     <div class="quote-shell" id="quote">
       <div class="container">
         <div class="quote-card">
           <div class="quote-head">
             <h2>Tell us about your job.</h2>
             <p>The form starts here—no searching, no waiting through a long conversation.</p>
           </div>
+          <div class="progress-wrap">
+            <div class="progress-meta"><span id="stepLabel">Step 1 of 3</span><span id="stepName">Contact</span></div>
+            <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+          </div>
           <div class="form-panel">
-            <div class="demo"><strong>Preview mode:</strong> Test the form experience below. Submissions are not being sent yet.</div>
-            <form id="quoteForm">
-              <div class="form-grid">
-                <div class="field"><label for="name">Name *</label><input id="name" required autocomplete="name" placeholder="Your name"></div>
-                <div class="field"><label for="phone">Phone number *</label><input id="phone" required type="tel" autocomplete="tel" placeholder="(203) 555-0123"></div>
-                <div class="field"><label for="town">Town *</label><select id="town" required><option value="">Select your town</option><option>Waterbury</option><option>Prospect</option><option>Naugatuck</option><option>Cheshire</option><option>Southington</option><option>Meriden</option><option>Bethany</option><option>Bristol</option><option>Thomaston</option><option>Wolcott</option><option>Watertown</option><option>New Haven</option><option>Hamden</option><option>New Britain</option><option>Other nearby town</option></select></div>
-                <div class="field"><label for="location">Where are the items? *</label><select id="location" required><option value="">Choose one</option><option>Curb or driveway</option><option>Garage</option><option>First floor</option><option>Upstairs</option><option>Basement</option><option>Attic</option><option>Storage unit</option><option>Multiple locations</option><option>Other</option></select></div>
-                <div class="field full"><label for="description">What needs to be removed? *</label><textarea id="description" required placeholder="Describe the items, amount, stairs, parking distance, or anything else we should know."></textarea></div>
-                <div class="field"><label for="timeframe">Preferred timeframe</label><select id="timeframe"><option>ASAP</option><option>Today</option><option>This week</option><option>Flexible</option></select></div>
-                <div class="field"><label for="photos">Upload photos *</label><input id="photos" type="file" accept="image/*" multiple required><p class="hint" id="fileStatus">Clear photos help us quote accurately.</p><div class="previews" id="previews"></div></div>
-                <div class="submit"><button class="btn btn-primary" type="submit">Get My Free Quote</button><div class="success" id="success">Demo complete—the live version will send the request and photos directly to JM Hauling.</div></div>
-              </div>
+            <div class="demo"><strong>Free quote request:</strong> Complete the three quick steps below and upload clear photos of the job.</div>
+            <form id="quoteForm" novalidate>
+              <section class="form-step active" data-step="1">
+                <h3 class="step-title">How can we reach you?</h3>
+                <p class="step-subtitle">Just the basics so we know who the quote is for.</p>
+                <div class="form-grid">
+                  <div class="field"><label for="name">Name *</label><input id="name" name="name" required autocomplete="name" placeholder="Your name"></div>
+                  <div class="field"><label for="phone">Phone number *</label><input id="phone" name="phone" required type="tel" autocomplete="tel" placeholder="(203) 555-0123"></div>
+                  <div class="field full"><label for="town">Town *</label><select id="town" name="town" required><option value="">Select your town</option><option>Waterbury</option><option>Prospect</option><option>Naugatuck</option><option>Cheshire</option><option>Southington</option><option>Meriden</option><option>Bethany</option><option>Bristol</option><option>Thomaston</option><option>Wolcott</option><option>Watertown</option><option>New Haven</option><option>Hamden</option><option>New Britain</option><option>Other nearby town</option></select></div>
+                </div>
+                <div class="step-actions"><button class="btn btn-primary next-step" type="button">Continue</button></div>
+              </section>
+
+              <section class="form-step" data-step="2">
+                <h3 class="step-title">Tell us about the job.</h3>
+                <p class="step-subtitle">This helps us understand the labor, access and timing.</p>
+                <div class="form-grid">
+                  <div class="field full"><label for="description">What needs to be removed? *</label><textarea id="description" name="description" required placeholder="Describe the items, amount, heavy materials, stairs, parking distance, or anything else we should know."></textarea></div>
+                  <div class="field"><label for="location">Where are the items? *</label><select id="location" name="location" required><option value="">Choose one</option><option>Curb or driveway</option><option>Garage</option><option>First floor</option><option>Upstairs</option><option>Basement</option><option>Attic</option><option>Storage unit</option><option>Multiple locations</option><option>Other</option></select></div>
+                  <div class="field"><label for="preferredDate">Preferred date</label><input id="preferredDate" name="preferredDate" type="date"><p class="date-note">Your appointment is not confirmed until JM Hauling contacts you.</p></div>
+                  <div class="field full">
+                    <label>How soon do you need it removed?</label>
+                    <div class="choice-grid">
+                      <div class="choice"><input type="radio" id="urgency-asap" name="urgency" value="ASAP" checked><label for="urgency-asap">ASAP</label></div>
+                      <div class="choice"><input type="radio" id="urgency-days" name="urgency" value="Within 2–3 days"><label for="urgency-days">Within 2–3 days</label></div>
+                      <div class="choice"><input type="radio" id="urgency-week" name="urgency" value="This week"><label for="urgency-week">This week</label></div>
+                      <div class="choice"><input type="radio" id="urgency-flex" name="urgency" value="Flexible"><label for="urgency-flex">Flexible</label></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="step-actions"><button class="btn btn-muted prev-step" type="button">Back</button><button class="btn btn-primary next-step" type="button">Continue</button></div>
+              </section>
+
+              <section class="form-step" data-step="3">
+                <h3 class="step-title">Add photos and you're done.</h3>
+                <p class="step-subtitle">Show the full amount, access path and any stairs or oversized items.</p>
+                <div class="photo-drop">
+                  <strong>Upload clear job photos *</strong>
+                  <p class="hint">Multiple angles help us give you a more accurate quote.</p>
+                  <input id="photos" name="photos" type="file" accept="image/*" multiple required>
+                  <p class="hint" id="fileStatus">No photos selected yet.</p>
+                  <div class="previews" id="previews"></div>
+                </div>
+                <div class="screen-note"><span>✓</span><span>After submission, we'll review everything and contact you with a quote or let you know if an in-person estimate is needed.</span></div>
+                <div class="step-actions"><button class="btn btn-muted prev-step" type="button">Back</button><button class="btn btn-primary" type="submit">Get My Free Quote</button></div>
+                <div class="success" id="success">Demo complete. The live version will save your request and photos, then alert JM Hauling.</div>
+              </section>
             </form>
           </div>
           <div class="next">
