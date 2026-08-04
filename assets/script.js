@@ -159,21 +159,31 @@ quoteForm.addEventListener("submit", async (event) => {
     return;
   }
 
- successMessage.innerHTML = `
-  <strong>Quote request received!</strong><br>
-  Thank you. JM Hauling will review your information and photos and contact you shortly.
-`;
+  successMessage.style.display = "none";
+  submitButton.disabled = true;
+  submitButton.textContent = "Sending Request...";
 
-successMessage.style.display = "block";
+  try {
+    const selectedPhotos = Array.from(photosInput.files);
+    const uploadedPhotoPaths = [];
+    const submissionFolder = crypto.randomUUID();
 
-// Prevent the customer from accidentally submitting the same request twice.
-submitButton.disabled = true;
-submitButton.textContent = "Request Sent ✓";
+    // Upload each selected photo.
+    for (const file of selectedPhotos) {
+      const safeFileName = file.name
+        .toLowerCase()
+        .replace(/[^a-z0-9._-]/g, "-");
 
-successMessage.scrollIntoView({
-  behavior: "smooth",
-  block: "center"
-});
+      const filePath =
+        `${submissionFolder}/${Date.now()}-${safeFileName}`;
+
+      const { error: uploadError } =
+        await supabaseClient.storage
+          .from("quote_photos")
+          .upload(filePath, file, {
+            contentType: file.type,
+            upsert: false
+          });
 
       if (uploadError) {
         throw uploadError;
@@ -190,7 +200,7 @@ successMessage.scrollIntoView({
     const preferredDate =
       document.getElementById("preferredDate").value;
 
-    // Save the customer request to the database.
+    // Save the request to the database.
     const { error: quoteError } =
       await supabaseClient
         .from("quote_requests")
@@ -210,8 +220,8 @@ successMessage.scrollIntoView({
             .value,
 
           item_location: document
-  .getElementById("location")
-  .value,
+            .getElementById("location")
+            .value,
 
           description: document
             .getElementById("description")
@@ -222,9 +232,7 @@ successMessage.scrollIntoView({
 
           scheduled_date: preferredDate || null,
 
-          photos: JSON.stringify(
-            uploadedPhotoPaths
-          ),
+          photos: JSON.stringify(uploadedPhotoPaths),
 
           status: "New Lead"
         });
@@ -233,27 +241,25 @@ successMessage.scrollIntoView({
       throw quoteError;
     }
 
-    successMessage.textContent =
-      "Thank you! Your quote request and photos were sent successfully.";
+    // Only show success after Supabase confirms the submission.
+    successMessage.innerHTML = `
+      <strong>Quote request received!</strong><br>
+      Thank you. JM Hauling will review your information and photos
+      and contact you shortly.
+    `;
 
     successMessage.style.display = "block";
 
-    quoteForm.reset();
-    previews.innerHTML = "";
-    fileStatus.textContent =
-      "No photos selected yet.";
-
-    showStep(0);
+    submitButton.disabled = true;
+    submitButton.textContent = "Request Sent ✓";
 
     successMessage.scrollIntoView({
       behavior: "smooth",
-      block: "nearest"
+      block: "center"
     });
+
   } catch (error) {
-    console.error(
-      "Quote submission failed:",
-      error
-    );
+    console.error("Quote submission failed:", error);
 
     alert(
       `Your request could not be sent. ${
@@ -261,11 +267,9 @@ successMessage.scrollIntoView({
         "Please try again or call JM Hauling."
       }`
     );
-  } finally {
-    if (successMessage.style.display !== "block") {
-  submitButton.disabled = false;
-  submitButton.textContent = "Get My Free Quote";
-}
+
+    submitButton.disabled = false;
+    submitButton.textContent = "Get My Free Quote";
   }
 });
     
