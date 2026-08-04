@@ -3,31 +3,132 @@
 // ----------------------------
 
 const SUPABASE_URL = "https://ocjtsdjxgozlcymyboja.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_D9aoJfd0GHu2HoETNx2qJQ_Z70NzJE7";
+const SUPABASE_ANON_KEY = "PASTE_YOUR_REAL_PUBLISHABLE_KEY_HERE";
 
-const supabase = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
 );
-const photos=document.getElementById('photos');
-    const previews=document.getElementById('previews');
-    const status=document.getElementById('fileStatus');
-    photos.addEventListener('change',()=>{
-      previews.innerHTML='';
-      const files=[...photos.files];
-      status.textContent=files.length?`${files.length} photo${files.length===1?'':'s'} selected.`:'Clear photos help us quote accurately.';
-      files.slice(0,6).forEach(file=>{const img=document.createElement('img');img.alt='Selected photo preview';img.src=URL.createObjectURL(file);previews.appendChild(img)});
-    });
-    // ----------------------------
-// Submit Quote Request
+
+
+// ----------------------------
+// Form Elements
 // ----------------------------
 
 const quoteForm = document.getElementById("quoteForm");
+const photos = document.getElementById("photos");
+const previews = document.getElementById("previews");
+const fileStatus = document.getElementById("fileStatus");
 const successMessage = document.getElementById("success");
 const submitButton = quoteForm.querySelector('button[type="submit"]');
 
+
+// ----------------------------
+// Photo Previews
+// ----------------------------
+
+photos.addEventListener("change", () => {
+  previews.innerHTML = "";
+
+  const selectedFiles = [...photos.files];
+
+  fileStatus.textContent = selectedFiles.length
+    ? `${selectedFiles.length} photo${
+        selectedFiles.length === 1 ? "" : "s"
+      } selected.`
+    : "No photos selected yet.";
+
+  selectedFiles.slice(0, 6).forEach((file) => {
+    const previewImage = document.createElement("img");
+
+    previewImage.alt = "Selected job photo preview";
+    previewImage.src = URL.createObjectURL(file);
+
+    previews.appendChild(previewImage);
+  });
+});
+
+
+// ----------------------------
+// Multi-Step Form Navigation
+// ----------------------------
+
+const formSteps = [...document.querySelectorAll(".form-step")];
+const nextButtons = [...document.querySelectorAll(".next-step")];
+const previousButtons = [...document.querySelectorAll(".prev-step")];
+
+const stepLabel = document.getElementById("stepLabel");
+const stepName = document.getElementById("stepName");
+const progressBar = document.getElementById("progressBar");
+
+const stepNames = ["Contact", "Job Details", "Photos"];
+
+let currentStep = 0;
+
+function showStep(stepIndex) {
+  formSteps.forEach((step, index) => {
+    step.classList.toggle("active", index === stepIndex);
+  });
+
+  currentStep = stepIndex;
+
+  stepLabel.textContent =
+    `Step ${currentStep + 1} of ${formSteps.length}`;
+
+  stepName.textContent = stepNames[currentStep];
+
+  progressBar.style.width =
+    `${((currentStep + 1) / formSteps.length) * 100}%`;
+}
+
+function validateCurrentStep() {
+  const requiredFields = [
+    ...formSteps[currentStep].querySelectorAll(
+      "input[required], select[required], textarea[required]"
+    )
+  ];
+
+  for (const field of requiredFields) {
+    if (!field.checkValidity()) {
+      field.reportValidity();
+      return false;
+    }
+  }
+
+  return true;
+}
+
+nextButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    if (!validateCurrentStep()) {
+      return;
+    }
+
+    showStep(
+      Math.min(currentStep + 1, formSteps.length - 1)
+    );
+  });
+});
+
+previousButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    showStep(Math.max(currentStep - 1, 0));
+  });
+});
+
+showStep(0);
+
+
+// ----------------------------
+// Submit Quote Request
+// ----------------------------
+
 quoteForm.addEventListener("submit", async (event) => {
   event.preventDefault();
+
+  if (!validateCurrentStep()) {
+    return;
+  }
 
   successMessage.style.display = "none";
   submitButton.disabled = true;
@@ -36,24 +137,24 @@ quoteForm.addEventListener("submit", async (event) => {
   try {
     const selectedPhotos = [...photos.files];
     const uploadedPhotoPaths = [];
-
-    // Give each submission its own unique folder.
     const submissionFolder = crypto.randomUUID();
 
-    // Upload every selected photo to Supabase Storage.
+    // Upload photos to Supabase Storage.
     for (const file of selectedPhotos) {
       const safeFileName = file.name
         .toLowerCase()
         .replace(/[^a-z0-9._-]/g, "-");
 
-      const filePath = `${submissionFolder}/${Date.now()}-${safeFileName}`;
+      const filePath =
+        `${submissionFolder}/${Date.now()}-${safeFileName}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from("quote_photos")
-        .upload(filePath, file, {
-          contentType: file.type,
-          upsert: false
-        });
+      const { error: uploadError } =
+        await supabaseClient.storage
+          .from("quote_photos")
+          .upload(filePath, file, {
+            contentType: file.type,
+            upsert: false
+          });
 
       if (uploadError) {
         throw uploadError;
@@ -62,19 +163,50 @@ quoteForm.addEventListener("submit", async (event) => {
       uploadedPhotoPaths.push(filePath);
     }
 
-    // Save the customer's information and photo paths.
-    const { error: quoteError } = await supabase
-      .from("quote_requests")
-      .insert({
-        name: document.getElementById("name").value.trim(),
-        phone: document.getElementById("phone").value.trim(),
-        town: document.getElementById("town").value,
-        location: document.getElementById("location").value,
-        description: document.getElementById("description").value.trim(),
-        timeframe: document.getElementById("timeframe").value,
-        photos: JSON.stringify(uploadedPhotoPaths),
-        status: "New Lead"
-      });
+    const selectedUrgency =
+      document.querySelector(
+        'input[name="urgency"]:checked'
+      )?.value || "ASAP";
+
+    const preferredDate =
+      document.getElementById("preferredDate").value;
+
+    // Save the quote request in the database.
+    const { error: quoteError } =
+      await supabaseClient
+        .from("quote_requests")
+        .insert({
+          name: document
+            .getElementById("name")
+            .value
+            .trim(),
+
+          phone: document
+            .getElementById("phone")
+            .value
+            .trim(),
+
+          town: document
+            .getElementById("town")
+            .value,
+
+          location: document
+            .getElementById("location")
+            .value,
+
+          description: document
+            .getElementById("description")
+            .value
+            .trim(),
+
+          timeframe: selectedUrgency,
+
+          scheduled_date: preferredDate || null,
+
+          photos: JSON.stringify(uploadedPhotoPaths),
+
+          status: "New Lead"
+        });
 
     if (quoteError) {
       throw quoteError;
@@ -82,11 +214,14 @@ quoteForm.addEventListener("submit", async (event) => {
 
     successMessage.textContent =
       "Thank you! Your quote request and photos were sent successfully.";
+
     successMessage.style.display = "block";
 
     quoteForm.reset();
     previews.innerHTML = "";
-    status.textContent = "Clear photos help us quote accurately.";
+    fileStatus.textContent = "No photos selected yet.";
+
+    showStep(0);
 
     successMessage.scrollIntoView({
       behavior: "smooth",
@@ -97,7 +232,8 @@ quoteForm.addEventListener("submit", async (event) => {
 
     alert(
       `Your request could not be sent. ${
-        error.message || "Please try again or call JM Hauling."
+        error.message ||
+        "Please try again or call JM Hauling."
       }`
     );
   } finally {
