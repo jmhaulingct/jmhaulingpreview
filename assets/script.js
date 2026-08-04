@@ -2,8 +2,11 @@
 // Supabase Connection
 // ----------------------------
 
-const SUPABASE_URL = "https://ocjtsdjxgozlcymyboja.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_D9aoJfd0GHu2HoETNx2qJQ_Z70NzJE7";
+const SUPABASE_URL =
+  "https://ocjtsdjxgozlcymyboja.supabase.co";
+
+const SUPABASE_ANON_KEY =
+  "sb_publishable_D9aoJfd0GHu2HoETNx2qJQ_Z70NzJE7";
 
 const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
@@ -16,21 +19,23 @@ const supabaseClient = window.supabase.createClient(
 // ----------------------------
 
 const quoteForm = document.getElementById("quoteForm");
-const photos = document.getElementById("photos");
+const photosInput = document.getElementById("photos");
 const previews = document.getElementById("previews");
 const fileStatus = document.getElementById("fileStatus");
 const successMessage = document.getElementById("success");
-const submitButton = quoteForm.querySelector('button[type="submit"]');
+const submitButton = quoteForm.querySelector(
+  'button[type="submit"]'
+);
 
 
 // ----------------------------
 // Photo Previews
 // ----------------------------
 
-photos.addEventListener("change", () => {
+photosInput.addEventListener("change", () => {
   previews.innerHTML = "";
 
-  const selectedFiles = [...photos.files];
+  const selectedFiles = Array.from(photosInput.files);
 
   fileStatus.textContent = selectedFiles.length
     ? `${selectedFiles.length} photo${
@@ -53,21 +58,36 @@ photos.addEventListener("change", () => {
 // Multi-Step Form Navigation
 // ----------------------------
 
-const formSteps = [...document.querySelectorAll(".form-step")];
-const nextButtons = [...document.querySelectorAll(".next-step")];
-const previousButtons = [...document.querySelectorAll(".prev-step")];
+const formSteps = Array.from(
+  document.querySelectorAll(".form-step")
+);
+
+const nextButtons = Array.from(
+  document.querySelectorAll(".next-step")
+);
+
+const previousButtons = Array.from(
+  document.querySelectorAll(".prev-step")
+);
 
 const stepLabel = document.getElementById("stepLabel");
 const stepName = document.getElementById("stepName");
 const progressBar = document.getElementById("progressBar");
 
-const stepNames = ["Contact", "Job Details", "Photos"];
+const stepNames = [
+  "Contact",
+  "Job Details",
+  "Photos"
+];
 
 let currentStep = 0;
 
 function showStep(stepIndex) {
   formSteps.forEach((step, index) => {
-    step.classList.toggle("active", index === stepIndex);
+    step.classList.toggle(
+      "active",
+      index === stepIndex
+    );
   });
 
   currentStep = stepIndex;
@@ -75,18 +95,19 @@ function showStep(stepIndex) {
   stepLabel.textContent =
     `Step ${currentStep + 1} of ${formSteps.length}`;
 
-  stepName.textContent = stepNames[currentStep];
+  stepName.textContent =
+    stepNames[currentStep];
 
   progressBar.style.width =
     `${((currentStep + 1) / formSteps.length) * 100}%`;
 }
 
 function validateCurrentStep() {
-  const requiredFields = [
-    ...formSteps[currentStep].querySelectorAll(
+  const requiredFields = Array.from(
+    formSteps[currentStep].querySelectorAll(
       "input[required], select[required], textarea[required]"
     )
-  ];
+  );
 
   for (const field of requiredFields) {
     if (!field.checkValidity()) {
@@ -104,15 +125,23 @@ nextButtons.forEach((button) => {
       return;
     }
 
-    showStep(
-      Math.min(currentStep + 1, formSteps.length - 1)
+    const nextStep = Math.min(
+      currentStep + 1,
+      formSteps.length - 1
     );
+
+    showStep(nextStep);
   });
 });
 
 previousButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    showStep(Math.max(currentStep - 1, 0));
+    const previousStep = Math.max(
+      currentStep - 1,
+      0
+    );
+
+    showStep(previousStep);
   });
 });
 
@@ -135,11 +164,14 @@ quoteForm.addEventListener("submit", async (event) => {
   submitButton.textContent = "Sending Request...";
 
   try {
-    const selectedPhotos = [...photos.files];
+    const selectedPhotos = Array.from(
+      photosInput.files
+    );
+
     const uploadedPhotoPaths = [];
     const submissionFolder = crypto.randomUUID();
 
-    // Upload photos to Supabase Storage.
+    // Upload each photo to Supabase Storage.
     for (const file of selectedPhotos) {
       const safeFileName = file.name
         .toLowerCase()
@@ -171,7 +203,7 @@ quoteForm.addEventListener("submit", async (event) => {
     const preferredDate =
       document.getElementById("preferredDate").value;
 
-    // Save the quote request in the database.
+    // Save the customer request to the database.
     const { error: quoteError } =
       await supabaseClient
         .from("quote_requests")
@@ -203,7 +235,9 @@ quoteForm.addEventListener("submit", async (event) => {
 
           scheduled_date: preferredDate || null,
 
-          photos: JSON.stringify(uploadedPhotoPaths),
+          photos: JSON.stringify(
+            uploadedPhotoPaths
+          ),
 
           status: "New Lead"
         });
@@ -219,7 +253,8 @@ quoteForm.addEventListener("submit", async (event) => {
 
     quoteForm.reset();
     previews.innerHTML = "";
-    fileStatus.textContent = "No photos selected yet.";
+    fileStatus.textContent =
+      "No photos selected yet.";
 
     showStep(0);
 
@@ -228,7 +263,10 @@ quoteForm.addEventListener("submit", async (event) => {
       block: "nearest"
     });
   } catch (error) {
-    console.error("Quote submission failed:", error);
+    console.error(
+      "Quote submission failed:",
+      error
+    );
 
     alert(
       `Your request could not be sent. ${
@@ -238,7 +276,8 @@ quoteForm.addEventListener("submit", async (event) => {
     );
   } finally {
     submitButton.disabled = false;
-    submitButton.textContent = "Get My Free Quote";
+    submitButton.textContent =
+      "Get My Free Quote";
   }
 });
     
