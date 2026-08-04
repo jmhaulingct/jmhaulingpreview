@@ -27,20 +27,25 @@ const submitButton = quoteForm.querySelector(
   'button[type="submit"]'
 );
 
+// Keep confirmation hidden until Supabase accepts the request.
+successMessage.style.display = "none";
+
 
 // ----------------------------
 // Photo Previews
 // ----------------------------
 
 photosInput.addEventListener("change", () => {
+  successMessage.style.display = "none";
+  submitButton.disabled = false;
+  submitButton.textContent = "Get My Free Quote";
+
   previews.innerHTML = "";
 
   const selectedFiles = Array.from(photosInput.files);
 
   fileStatus.textContent = selectedFiles.length
-    ? `${selectedFiles.length} photo${
-        selectedFiles.length === 1 ? "" : "s"
-      } selected.`
+    ? `${selectedFiles.length} photo${selectedFiles.length === 1 ? "" : "s"} selected.`
     : "No photos selected yet.";
 
   selectedFiles.slice(0, 6).forEach((file) => {
@@ -52,7 +57,6 @@ photosInput.addEventListener("change", () => {
     previews.appendChild(previewImage);
   });
 });
-
 
 // ----------------------------
 // Multi-Step Form Navigation
