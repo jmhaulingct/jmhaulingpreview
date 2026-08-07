@@ -244,7 +244,49 @@ quoteForm.addEventListener("submit", async (event) => {
     if (quoteError) {
       throw quoteError;
     }
+// Send JM Hauling an email notification.
+// The quote is already saved, so an email problem should not
+// make the customer think their submission failed.
+const { error: emailError } =
+  await supabaseClient.functions.invoke("send-quote-email", {
+    body: {
+      name: document
+        .getElementById("name")
+        .value
+        .trim(),
 
+      phone: document
+        .getElementById("phone")
+        .value
+        .trim(),
+
+      town: document
+        .getElementById("town")
+        .value,
+
+      item_location: document
+        .getElementById("location")
+        .value,
+
+      description: document
+        .getElementById("description")
+        .value
+        .trim(),
+
+      timeframe: selectedUrgency,
+
+      scheduled_date: preferredDate || null,
+
+      photos: uploadedPhotoPaths
+    }
+  });
+
+if (emailError) {
+  console.error(
+    "Quote saved, but email notification failed:",
+    emailError
+  );
+}
     // Only show success after Supabase confirms the submission.
     successMessage.innerHTML = `
       <strong>Quote request received!</strong><br>
