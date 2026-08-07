@@ -35,28 +35,77 @@ successMessage.style.display = "none";
 // Photo Previews
 // ----------------------------
 
+let selectedPhotoFiles = [];
+
 photosInput.addEventListener("change", () => {
   successMessage.style.display = "none";
   submitButton.disabled = false;
   submitButton.textContent = "Get My Free Quote";
 
+  // Add newly selected photos to our list.
+  selectedPhotoFiles = [
+    ...selectedPhotoFiles,
+    ...Array.from(photosInput.files)
+  ];
+
+  updatePhotoInput();
+  renderPhotoPreviews();
+});
+
+function updatePhotoInput() {
+  const dataTransfer = new DataTransfer();
+
+  selectedPhotoFiles.forEach((file) => {
+    dataTransfer.items.add(file);
+  });
+
+  photosInput.files = dataTransfer.files;
+}
+
+function renderPhotoPreviews() {
   previews.innerHTML = "";
 
-  const selectedFiles = Array.from(photosInput.files);
-
-  fileStatus.textContent = selectedFiles.length
-    ? `${selectedFiles.length} photo${selectedFiles.length === 1 ? "" : "s"} selected.`
+  fileStatus.textContent = selectedPhotoFiles.length
+    ? `${selectedPhotoFiles.length} photo${
+        selectedPhotoFiles.length === 1 ? "" : "s"
+      } selected.`
     : "No photos selected yet.";
 
-  selectedFiles.slice(0, 6).forEach((file) => {
+  selectedPhotoFiles.forEach((file, index) => {
+    const previewWrapper = document.createElement("div");
+    previewWrapper.className = "preview-item";
+
     const previewImage = document.createElement("img");
+previewImage.alt = "Selected job photo preview";
 
-    previewImage.alt = "Selected job photo preview";
-    previewImage.src = URL.createObjectURL(file);
+const imageUrl = URL.createObjectURL(file);
+previewImage.src = imageUrl;
 
-    previews.appendChild(previewImage);
+previewImage.onload = () => {
+  URL.revokeObjectURL(imageUrl);
+};
+
+    const removeButton = document.createElement("button");
+    removeButton.type = "button";
+    removeButton.className = "remove-photo";
+    removeButton.textContent = "×";
+    removeButton.setAttribute(
+      "aria-label",
+      `Remove photo ${index + 1}`
+    );
+
+    removeButton.addEventListener("click", () => {
+      selectedPhotoFiles.splice(index, 1);
+
+      updatePhotoInput();
+      renderPhotoPreviews();
+    });
+
+    previewWrapper.appendChild(previewImage);
+    previewWrapper.appendChild(removeButton);
+    previews.appendChild(previewWrapper);
   });
-});
+}
 
 // ----------------------------
 // Multi-Step Form Navigation
@@ -287,6 +336,12 @@ if (emailError) {
     emailError
   );
 }
+    // Clear the form for the next quote.
+quoteForm.reset();
+selectedPhotoFiles = [];
+updatePhotoInput();
+renderPhotoPreviews();
+    
     // Only show success after Supabase confirms the submission.
     successMessage.innerHTML = `
       <strong>Quote request received!</strong><br>
