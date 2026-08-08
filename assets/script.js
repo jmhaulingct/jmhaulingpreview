@@ -336,6 +336,10 @@ if (emailError) {
     emailError
   );
 }
+    // Tell Meta a real quote request was successfully submitted.
+if (typeof fbq === "function") {
+  fbq("track", "Lead");
+}
     // Clear the form for the next quote.
 quoteForm.reset();
 selectedPhotoFiles = [];
