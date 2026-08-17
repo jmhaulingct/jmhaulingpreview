@@ -340,6 +340,10 @@ if (emailError) {
 if (typeof fbq === "function") {
   fbq("track", "Lead");
 }
+    // Tell Google Analytics a real quote request was successfully submitted.
+if (typeof gtag === "function") {
+  gtag("event", "generate_lead");
+}
     // Clear the form for the next quote.
 quoteForm.reset();
 selectedPhotoFiles = [];
