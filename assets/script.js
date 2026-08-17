@@ -219,6 +219,7 @@ quoteForm.addEventListener("submit", async (event) => {
   try {
     const selectedPhotos = Array.from(photosInput.files);
     const uploadedPhotoPaths = [];
+    let photoUploadFailed = false;
     const submissionFolder = crypto.randomUUID();
 
     // Upload each selected photo.
@@ -239,12 +240,15 @@ quoteForm.addEventListener("submit", async (event) => {
           });
 
       if (uploadError) {
-        throw uploadError;
-      }
+  console.error(
+    "Photo upload failed, but continuing with quote submission:",
+    uploadError
+  );
+  photoUploadFailed = true;
+  continue;
+}
 
-      uploadedPhotoPaths.push(filePath);
-    }
-
+uploadedPhotoPaths.push(filePath);
     const selectedUrgency =
       document.querySelector(
         'input[name="urgency"]:checked'
@@ -351,7 +355,14 @@ updatePhotoInput();
 renderPhotoPreviews();
     
     // Only show success after Supabase confirms the submission.
-    successMessage.innerHTML = `
+    successMessage.innerHTML = photoUploadFailed
+  ? `
+      <strong>Quote request received!</strong><br>
+      Your information was submitted successfully, but one or more photos
+      may not have uploaded. Please text your photos to 860-341-2003 so we
+      can give you the most accurate quote.
+    `
+  : `
       <strong>Quote request received!</strong><br>
       Thank you. JM Hauling will review your information and photos
       and contact you shortly.
