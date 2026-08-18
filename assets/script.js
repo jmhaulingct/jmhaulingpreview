@@ -249,6 +249,7 @@ quoteForm.addEventListener("submit", async (event) => {
 }
 
 uploadedPhotoPaths.push(filePath);
+    }
     const selectedUrgency =
       document.querySelector(
         'input[name="urgency"]:checked'
